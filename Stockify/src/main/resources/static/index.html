@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockify - Inventory Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-box"></i> Stockify</h1>
+            <div class="header-actions">
+                <button id="settingsBtn" class="btn"><i class="fas fa-cog"></i> Settings</button>
+                <button id="theme-toggle-btn" class="btn"><i class="fas fa-moon"></i></button>
+            </div>
+        </header>
+
+        <main>
+            <section class="dashboard-nav">
+                <button id="productsNavBtn" class="dashboard-btn"><i class="fas fa-box"></i> Products</button>
+                <button id="billsNavBtn" class="dashboard-btn"><i class="fas fa-file-invoice"></i>Selling And Billing</button>
+                <button id="sellHistoryNavBtn" class="dashboard-btn"><i class="fas fa-history"></i> Sell History</button>
+            </section>
+            <section class="products-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-boxes"></i> Products</h2>
+                    <div class="actions">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Search products...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button id="addProductBtn" class="btn primary"><i class="fas fa-plus"></i> Add Product</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Barcode</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bills-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-invoice"></i>Selling & Billing Records</h2>
+                    <button id="createBillBtn" class="btn primary"><i class="fas fa-plus"></i> Create Bill</button>
+                </div>
+                <div class="table-container">
+                    <table id="billsTable">
+                        <thead>
+                            <tr>
+                                <th>Bill No</th>
+                                <th>Date & Time</th>
+                                <th>Product(s)</th>
+                                <th>Barcode</th><br>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Bills will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Sell Product History Section -->
+            <section class="sell-history-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Sell Product History</h2>
+                </div>
+                <div id="sellProductHistoryContainer" class="table-container">
+                    <table id="sellHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sell history will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Product</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCode">Product Code (Barcode)</label>
+                    <input type="text" id="productCode" required placeholder="Scan or enter unique code">
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price (₹)</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Stock</label>
+                    <input type="number" id="productStock" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Product</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group">
+                    <label for="editProductName">Product Name</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductCode">Product Code (Barcode)</label>
+                    <input type="text" id="editProductCode" required placeholder="Scan or enter unique code">
+                </div>
+                <div class="form-group">
+                    <label for="editProductPrice">Price (₹)</label>
+                    <input type="number" id="editProductPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductStock">Stock</label>
+                    <input type="number" id="editProductStock" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Bill Modal -->
+    <div id="addBillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Bill</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="addBillForm">
+                <div class="form-group">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone">Customer Phone</label>
+                    <input type="tel" id="customerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="productSearch">Search Product</label>
+                    <div class="search-container">
+                        <input type="text" id="productSearch" placeholder="Search by barcode or product name...">
+                        <button type="button" id="searchProductBtn" class="btn"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productSelect">Select Product</label>
+                    <select id="billProductSelect" class="product-select-dropdown" required>
+                        <option value="">Select a product</option>
+                    </select>
+                    <button type="button" id="scanBarcodeBtn" class="btn" style="margin-top:8px;"><i class="fas fa-barcode"></i> Scan Barcode</button>
+                    <div id="barcodeScannerContainer" style="display:none; margin-top:10px;">
+                        <video id="barcodeVideo" width="100%" height="180" style="border:1px solid #ccc;"></video>
+                        <button type="button" id="closeBarcodeScanner" class="btn" style="margin-top:8px;">Close Scanner</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" id="quantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="sellingPrice">Selling Price (₹)</label>
+                    <input type="number" id="sellingPrice" step="0.01" readonly>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="addItemToBillBtn" class="btn"><i class="fas fa-plus"></i> Add Item</button>
+                    <button type="submit" class="btn primary">Create Bill</button>
+                </div>
+                <div id="billItems" class="bill-items">
+                    <!-- Bill items will be added here -->
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Shop Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="shopName">Shop Name</label>
+                    <input type="text" id="shopName" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label for="gstin">GSTIN</label>
+                    <input type="text" id="gstin">
+                </div>
+                <div class="form-group">
+                    <label for="logoInput">Shop Logo</label>
+                    <input type="file" id="logoInput" accept="image/*">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bill Preview Modal -->
+    <div id="billPreviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Bill Details</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="billPreview" class="bill-preview">
+                <!-- Bill preview will be generated here -->
+            </div>
+            <div class="form-actions">
+                <button onclick="printBill()" class="btn primary"><i class="fas fa-print"></i> Print Bill</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
